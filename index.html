@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PVE TAILOR — B1900D</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── À MODIFIER : coller l'URL de ton backend Render ici ── */
+</style>
+<script>
+  // ╔══════════════════════════════════════════════════════════╗
+  // ║  REMPLACE PAR L'URL DE TON BACKEND RENDER               ║
+  // ║  Exemple : https://pve-tailor-backend.onrender.com      ║
+  // ╚══════════════════════════════════════════════════════════╝
+  const BACKEND_URL = 'https://pve-tailor-backend.onrender.com';
+</script>
+<style>
+:root{--bg:#0a0e14;--surface:#111722;--surface2:#171f2e;--border:#1e2d45;--accent:#00b4ff;--accent3:#00e5a0;--warn:#ffd166;--danger:#ff4757;--text:#c8d8f0;--text-dim:#5a7090;--text-bright:#e8f4ff;--mono:'Share Tech Mono',monospace;--sans:'Barlow',sans-serif;--cond:'Barlow Condensed',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;background-image:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(0,180,255,.08) 0%,transparent 60%),repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(30,45,69,.3) 39px,rgba(30,45,69,.3) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(30,45,69,.15) 39px,rgba(30,45,69,.15) 40px)}
+header{background:linear-gradient(135deg,#0d1520,#111e30);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.logo-badge{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),#0066aa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-weight:900;font-size:13px;color:white;box-shadow:0 0 20px rgba(0,180,255,.3)}
+.header-title{font-family:var(--cond);font-weight:700;font-size:18px;letter-spacing:2px;color:var(--text-bright);text-transform:uppercase}
+.header-sub{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:1px}
+.step-counter{font-family:var(--mono);font-size:12px;color:var(--text-dim)}
+.step-counter span{color:var(--accent);font-size:16px;font-weight:bold}
+.progress-bar{height:2px;background:var(--border)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent3));transition:width .5s ease;box-shadow:0 0 8px var(--accent)}
+main{max-width:780px;margin:0 auto;padding:20px 16px 100px}
+.step{display:none;animation:fadeSlide .3s ease}
+.step.active{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.step-header{margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:12px}
+.step-num{font-family:var(--cond);font-weight:900;font-size:48px;line-height:1;color:var(--border);letter-spacing:-2px}
+.step-title{font-family:var(--cond);font-weight:700;font-size:22px;letter-spacing:2px;text-transform:uppercase;color:var(--text-bright)}
+.step-desc{font-size:12px;color:var(--text-dim);margin-top:2px;font-family:var(--mono)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}
+.card-title{font-family:var(--cond);font-weight:600;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.span-2{grid-column:span 2}
+.field{display:flex;flex-direction:column;gap:4px}
+label{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;text-transform:uppercase}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:4px;color:var(--text-bright);font-family:var(--mono);font-size:14px;padding:8px 10px;transition:border-color .2s;width:100%;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,180,255,.15)}
+input[type="number"]{-moz-appearance:textfield}
+input[type="number"]::-webkit-inner-spin-button{display:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%235a7090'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+input.icao{text-transform:uppercase;letter-spacing:2px;font-size:16px;font-weight:bold;color:var(--accent)}
+.fixed-val{font-family:var(--mono);font-size:13px;color:var(--warn);text-align:right;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;width:100%;display:block}
+.vol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.vol-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;cursor:pointer;transition:all .2s;text-align:left}
+.vol-btn:hover{border-color:var(--accent);background:rgba(0,180,255,.05)}
+.vol-btn.selected{border-color:var(--accent);background:rgba(0,180,255,.1);box-shadow:0 0 12px rgba(0,180,255,.2)}
+.vol-btn-num{font-family:var(--cond);font-weight:700;font-size:15px;color:var(--accent)}
+.vol-btn-route{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:2px}
+.vol-btn-time{font-family:var(--mono);font-size:10px;color:var(--warn);margin-top:1px}
+.dow-display{background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.3);border-radius:6px;padding:12px;margin-top:10px;display:none}
+.dow-display.visible{display:block}
+.dow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.dow-val{font-family:var(--cond);font-weight:700;font-size:18px;color:var(--accent3)}
+.dow-unit{font-family:var(--mono);font-size:9px;color:var(--text-dim)}
+.ver-btn{padding:6px 14px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text-dim);font-family:var(--mono);font-size:12px;cursor:pointer;transition:all .2s;margin-right:4px;margin-bottom:4px}
+.ver-btn.active{border-color:var(--accent3);background:rgba(0,229,160,.1);color:var(--accent3)}
+.fuel-table{width:100%;border-collapse:collapse}
+.fuel-table th{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--text-dim);text-align:right;padding:0 8px 8px;text-transform:uppercase}
+.fuel-table th:first-child{text-align:left}
+.fuel-table td{padding:4px 8px;border-bottom:1px solid rgba(30,45,69,.5)}
+.fuel-table td input{text-align:right;padding:6px 8px;font-size:13px}
+.fuel-total td{background:rgba(0,180,255,.06);border-top:1px solid var(--accent)!important}
+.fuel-total td:first-child{font-family:var(--cond);font-weight:700;font-size:14px;color:var(--accent);text-transform:uppercase}
+.fuel-total input{color:var(--accent)!important;font-weight:bold;font-size:15px!important;border-color:rgba(0,180,255,.3)!important;background:rgba(0,180,255,.05)!important}
+.fuel-editable td:first-child{color:var(--warn)!important}
+.fuel-editable input{border-color:rgba(255,209,102,.4)!important;background:rgba(255,209,102,.04)!important}
+.pax-row{display:grid;grid-template-columns:80px 1fr 80px 90px;gap:8px;align-items:center;margin-bottom:8px}
+.pax-label{font-family:var(--cond);font-weight:700;font-size:15px;color:var(--text-dim)}
+.pax-std{font-family:var(--mono);font-size:11px;color:var(--text-dim);text-align:right}
+.ezfw-result{background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.3);border-radius:8px;padding:14px;margin-top:12px}
+.ezfw-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(30,45,69,.5);font-family:var(--mono);font-size:12px}
+.ezfw-total{font-family:var(--cond);font-weight:900;font-size:36px;color:var(--accent3);text-align:center;margin-top:8px}
+.metar-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:8px;font-family:var(--mono);font-size:11px;line-height:1.8}
+.metar-icao{font-family:var(--cond);font-weight:700;font-size:14px;color:var(--accent);margin-bottom:6px}
+.metar-raw{color:var(--warn);word-break:break-all}
+.taf-raw{color:var(--accent3);word-break:break-all;margin-top:4px}
+.metar-lbl{font-size:9px;color:var(--text-dim);letter-spacing:2px;display:block;margin-bottom:2px;text-transform:uppercase}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fetch-btn{background:rgba(0,180,255,.1);border:1px solid var(--accent);color:var(--accent);border-radius:4px;padding:10px 16px;font-family:var(--mono);font-size:12px;cursor:pointer;letter-spacing:1px;transition:all .2s;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.fetch-btn:hover{background:rgba(0,180,255,.2)}
+.fetch-btn:disabled{opacity:.5;cursor:default}
+.wp-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+.wp-table th{font-size:9px;color:var(--text-dim);text-align:center;padding:2px 4px 8px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.wp-table th:first-child{text-align:left}
+.wp-table td{padding:3px 4px;border-bottom:1px solid rgba(30,45,69,.4)}
+.wp-table td:first-child{font-family:var(--cond);font-weight:700;font-size:14px;padding-left:0}
+.wp-origin,.wp-dest{color:var(--accent)!important}
+.wp-toc,.wp-tod{color:var(--warn)!important}
+.crew-row{display:grid;grid-template-columns:80px 130px 1fr;gap:8px;align-items:center;margin-bottom:6px}
+.crew-label{font-family:var(--cond);font-weight:600;font-size:14px;color:var(--text-dim);text-transform:uppercase}
+.check-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.check-row:last-child{border-bottom:none}
+.toggle-check{display:flex;gap:4px}
+.check-opt{padding:4px 14px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text-dim);font-family:var(--mono);font-size:11px;cursor:pointer;transition:all .2s}
+.check-opt.active{border-color:var(--accent3);background:rgba(0,229,160,.1);color:var(--accent3)}
+.block-fuel-display{background:linear-gradient(135deg,rgba(0,180,255,.1),rgba(0,180,255,.05));border:1px solid var(--accent);border-radius:8px;padding:16px;text-align:center;margin:16px 0}
+.block-fuel-val{font-family:var(--cond);font-weight:900;font-size:48px;color:var(--warn);line-height:1}
+.recap-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(30,45,69,.5)}
+.recap-key{color:var(--text-dim);font-family:var(--mono);font-size:11px}
+.recap-val{color:var(--text-bright);font-family:var(--mono);font-weight:bold}
+.nav-footer{position:fixed;bottom:0;left:0;right:0;background:rgba(10,14,20,.95);border-top:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(12px);z-index:100}
+.btn{padding:12px 24px;border-radius:6px;font-family:var(--cond);font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#0088cc);color:white;flex:1;box-shadow:0 4px 20px rgba(0,180,255,.3)}
+.btn-primary:hover{box-shadow:0 4px 30px rgba(0,180,255,.5);transform:translateY(-1px)}
+.btn-secondary{background:var(--surface);color:var(--text-dim);border:1px solid var(--border)}
+.btn-success{background:linear-gradient(135deg,var(--accent3),#00aa77);color:#001a0e;flex:1;box-shadow:0 4px 20px rgba(0,229,160,.3)}
+.btn:disabled{opacity:.5;cursor:default;transform:none!important;box-shadow:none!important}
+.info-banner{background:rgba(0,180,255,.06);border:1px solid rgba(0,180,255,.2);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--accent);font-family:var(--mono);margin-bottom:12px;line-height:1.6}
+.status-box{margin-top:12px;padding:12px;border-radius:6px;font-family:var(--mono);font-size:12px;text-align:center;display:none}
+.status-box.loading{background:rgba(0,180,255,.05);border:1px solid rgba(0,180,255,.2);color:var(--accent);display:block}
+.status-box.success{background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.3);color:var(--accent3);display:block}
+.status-box.error{background:rgba(255,71,87,.05);border:1px solid rgba(255,71,87,.3);color:var(--danger);display:block}
+.backend-status{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:10px;margin-left:8px}
+.backend-status.ok{background:rgba(0,229,160,.15);color:var(--accent3)}
+.backend-status.ko{background:rgba(255,71,87,.15);color:var(--danger)}
+@media(max-width:500px){.grid-4{grid-template-columns:1fr 1fr}.crew-row{grid-template-columns:60px 110px 1fr}.vol-grid{grid-template-columns:1fr 1fr}.pax-row{grid-template-columns:70px 1fr 70px 80px}}
+</style>
+</head>
+<body>
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="logo-badge">PVE</div>
+    <div>
+      <div class="header-title">TAILOR <span style="color:var(--accent3);font-size:12px">v4</span>
+        <span class="backend-status ko" id="backendBadge">⬤ backend</span>
+      </div>
+      <div class="header-sub">B1900D · iNTAIRLINE / AQF</div>
+    </div>
+  </div>
+  <div class="step-counter">ÉTAPE <span id="stepNum">1</span>/5</div>
+</header>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+
+<main>
+
+<!-- ═══ STEP 1 ═══ -->
+<div class="step active" id="step1">
+  <div class="step-header"><div class="step-num">01</div><div><div class="step-title">Vol & Avion</div><div class="step-desc">Sélection automatique des données</div></div></div>
+  <div class="card">
+    <div class="card-title">Choisir le vol</div>
+    <div class="vol-grid" id="volGrid" style="margin-bottom:12px"></div>
+    <div class="info-banner" id="volInfo" style="display:none"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Immatriculation & Version</div>
+    <div class="field" style="margin-bottom:10px"><label>Avion</label><select id="avionSelect" onchange="onAvionChange()"><option value="">-- Choisir --</option></select></div>
+    <div class="dow-display" id="dowDisplay">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-bottom:6px">VERSION ÉQUIPAGE</div>
+      <div id="versionBtns" style="margin-bottom:10px"></div>
+      <div class="dow-grid" id="dowGrid"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Équipage</div>
+    <div class="crew-row"><div class="crew-label">CDB</div><div class="field"><input type="text" id="cdb_tri" placeholder="Trigramme" maxlength="3" oninput="this.value=this.value.toUpperCase()"></div><div class="field"><select id="cdb_pf"><option value="">Rôle</option><option>PF</option><option>PM</option></select></div></div>
+    <div class="crew-row"><div class="crew-label">OPL</div><div class="field"><input type="text" id="opl_tri" placeholder="Trigramme" maxlength="3" oninput="this.value=this.value.toUpperCase()"></div><div class="field"><select id="opl_pf"><option value="">Rôle</option><option>PF</option><option>PM</option></select></div></div>
+    <div class="crew-row"><div class="crew-label">PCB</div><div class="field"><input type="text" id="pcb_quad" placeholder="Quadrigramme" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div><div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Date & Horaires</div>
+    <div class="grid-3">
+      <div class="field"><label>Date</label><input type="date" id="date_vol"></div>
+      <div class="field"><label>ETD (LT)</label><input type="time" id="etd"></div>
+      <div class="field"><label>ETA (LT)</label><input type="time" id="eta"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STEP 2 ═══ -->
+<div class="step" id="step2">
+  <div class="step-header"><div class="step-num">02</div><div><div class="step-title">Météo</div><div class="step-desc">METAR · TAF via backend</div></div></div>
+  <div class="card">
+    <div class="card-title">Terrains</div>
+    <div class="grid-4" style="margin-bottom:12px">
+      <div class="field span-2"><label>Départ</label><input type="text" id="wx_dep" class="icao" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="field span-2"><label>Destination</label><input type="text" id="wx_arr" class="icao" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="field span-2"><label>Altn 1</label><input type="text" id="wx_altn1" class="icao" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="field span-2"><label>Altn 2</label><input type="text" id="wx_altn2" class="icao" maxlength="4" oninput="this.value=this.value.toUpperCase()"></div>
+    </div>
+    <button class="fetch-btn" id="metarBtn" onclick="fetchAllMetar()">
+      <span id="fetchIcon">⟳</span><span id="fetchLabel">RÉCUPÉRER METAR / TAF</span>
+    </button>
+  </div>
+  <div id="metar-results"></div>
+</div>
+
+<!-- ═══ STEP 3 ═══ -->
+<div class="step" id="step3">
+  <div class="step-header"><div class="step-num">03</div><div><div class="step-title">Carburant & Masse</div><div class="step-desc">Fuel Plan · EZFW</div></div></div>
+  <div class="card">
+    <div class="card-title">Données Avion</div>
+    <div class="grid-3">
+      <div class="field"><label>DOW (lbs)</label><input type="number" id="bow" readonly style="color:var(--accent3)"></div>
+      <div class="field"><label>DOI</label><input type="number" id="doi_display" readonly style="color:var(--accent3)"></div>
+      <div class="field"><label>MTOW (lbs)</label><span class="fixed-val">17 120</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Plan Carburant <span style="font-size:10px;color:var(--warn);font-weight:400;letter-spacing:0"> — orange = à saisir</span></div>
+    <table class="fuel-table">
+      <thead><tr><th style="text-align:left">Phase</th><th>Durée</th><th>Fuel (lbs)</th></tr></thead>
+      <tbody>
+        <tr><td>Climb + T/O</td><td><input type="text" id="t_climb" readonly></td><td><input type="number" id="f_climb" readonly></td></tr>
+        <tr><td>Cruise</td><td><input type="text" id="t_cruise" readonly></td><td><input type="number" id="f_cruise" readonly></td></tr>
+        <tr><td>Descent</td><td><input type="text" id="t_desc" readonly></td><td><input type="number" id="f_desc" readonly></td></tr>
+        <tr><td>Approach</td><td><span class="fixed-val" style="font-size:12px;padding:6px 8px">00:12</span></td><td><span class="fixed-val" style="font-size:12px;padding:6px 8px">150</span></td></tr>
+        <tr><td>Total phases</td><td></td><td><input type="number" id="f_total_phases" readonly></td></tr>
+        <tr class="fuel-editable"><td>+ Correction Trip</td><td></td><td><input type="number" id="f_corr" placeholder="0" oninput="calcFuel()"></td></tr>
+        <tr><td>= Trip Fuel</td><td><input type="text" id="t_trip" readonly></td><td><input type="number" id="f_trip" readonly></td></tr>
+        <tr><td>RR (5% min 60 lbs)</td><td></td><td><input type="number" id="f_rr" readonly></td></tr>
+        <tr class="fuel-editable"><td>Altn Fuel</td><td><input type="text" id="t_altn" placeholder="--:--"></td><td><input type="number" id="f_altn" placeholder="0" oninput="calcFuel()"></td></tr>
+        <tr><td>Final Reserve</td><td><span class="fixed-val" style="font-size:12px;padding:6px 8px">00:30</span></td><td><span class="fixed-val" style="font-size:12px;padding:6px 8px">380</span></td></tr>
+        <tr><td>Taxi (min 110 lbs)</td><td></td><td><input type="number" id="f_taxi" value="110" min="110" oninput="calcFuel()"></td></tr>
+        <tr class="fuel-editable"><td>Extra / Add</td><td></td><td><input type="number" id="f_extra" placeholder="0" oninput="calcFuel()"></td></tr>
+        <tr class="fuel-editable"><td>CDB Fuel</td><td></td><td><input type="number" id="f_cdb" placeholder="0" oninput="calcFuel()"></td></tr>
+        <tr class="fuel-total"><td>Required Fuel</td><td></td><td><input type="number" id="f_required" readonly></td></tr>
+        <tr class="fuel-total"><td>BLOCK FUEL</td><td></td><td><input type="number" id="f_block" readonly></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">EZFW — Masse Estimée</div>
+    <div class="pax-row"><div class="pax-label">Hommes</div><div class="field"><input type="number" id="pax_h" min="0" value="0" oninput="calcEZFW()"></div><div class="pax-std">× 203 lbs</div><div class="field"><input type="number" id="mass_h" readonly style="color:var(--text-dim)"></div></div>
+    <div class="pax-row"><div class="pax-label">Femmes</div><div class="field"><input type="number" id="pax_f" min="0" value="0" oninput="calcEZFW()"></div><div class="pax-std">× 160 lbs</div><div class="field"><input type="number" id="mass_f" readonly style="color:var(--text-dim)"></div></div>
+    <div class="pax-row"><div class="pax-label">Enfants</div><div class="field"><input type="number" id="pax_e" min="0" value="0" oninput="calcEZFW()"></div><div class="pax-std">× 77 lbs</div><div class="field"><input type="number" id="mass_e" readonly style="color:var(--text-dim)"></div></div>
+    <div class="pax-row"><div class="pax-label" style="font-size:12px;color:var(--text-dim)">Bagages</div><div></div><div class="pax-std">× 10 lbs/pax</div><div class="field"><input type="number" id="mass_bag" readonly style="color:var(--text-dim)"></div></div>
+    <div class="ezfw-result" id="ezfwResult">
+      <div class="ezfw-row"><span style="color:var(--text-dim)">Payload</span><span id="res_payload" style="font-family:var(--mono)"></span></div>
+      <div class="ezfw-row"><span style="color:var(--text-dim)">DOW</span><span id="res_dow" style="color:var(--accent3);font-family:var(--mono)"></span></div>
+      <div style="text-align:center;font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-top:10px">EZFW</div>
+      <div class="ezfw-total" id="res_ezfw">—</div>
+      <div style="text-align:center;font-family:var(--mono);font-size:11px;margin-top:4px" id="res_margin"></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">Table Corrections</div><div id="corrTable"></div></div>
+</div>
+
+<!-- ═══ STEP 4 ═══ -->
+<div class="step" id="step4">
+  <div class="step-header"><div class="step-num">04</div><div><div class="step-title">Route & Sûreté</div><div class="step-desc">Log de navigation · Alternates · Fouille</div></div></div>
+  <div class="card">
+    <div class="card-title">Routing</div>
+    <div class="field" style="margin-bottom:12px"><label>Route complète</label><textarea id="route_full" rows="2" style="font-size:12px;line-height:1.6"></textarea></div>
+    <div class="card-title">Log de Navigation</div>
+    <div style="overflow-x:auto">
+      <table class="wp-table">
+        <thead><tr><th>POINT</th><th>ALT'</th><th>DRM°</th><th>DIST</th><th>Tsv'</th><th>HE</th><th>F.Est</th><th>Réel</th></tr></thead>
+        <tbody id="wpBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">Alternates</div><div id="altnRows"></div></div>
+  <div class="card">
+    <div class="card-title">Sûreté</div>
+    <div class="check-row">
+      <div style="flex:1;font-size:13px">Fouille avion effectuée</div>
+      <div class="toggle-check">
+        <button class="check-opt" id="fouille_oui" onclick="toggleFouille('OUI')">OUI</button>
+        <button class="check-opt" id="fouille_non" onclick="toggleFouille('NON')">NON</button>
+      </div>
+    </div>
+    <div class="check-row">
+      <div style="flex:1;font-size:13px">Heure LT fouille</div>
+      <div class="field" style="width:130px"><input type="time" id="heure_fouille"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STEP 5 ═══ -->
+<div class="step" id="step5">
+  <div class="step-header"><div class="step-num">05</div><div><div class="step-title">Récapitulatif</div><div class="step-desc">Vérification — Génération PDF</div></div></div>
+  <div id="recap-content"></div>
+  <div class="status-box" id="pdfStatus"></div>
+</div>
+
+</main>
+
+<div class="nav-footer">
+  <button class="btn btn-secondary" id="btnPrev" onclick="changeStep(-1)" style="display:none">← RETOUR</button>
+  <button class="btn btn-primary" id="btnNext" onclick="changeStep(1)">SUIVANT →</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════
+const DOW_DATA={
+  'F-GLND':{'2/0':{dow:10937,doi:40},'2/1':{dow:11102,doi:35},'2/2':{dow:11268,doi:31},'3/0':{dow:11125,doi:34},'3/1':{dow:11290,doi:31}},
+  'F-GLNE':{'2/0':{dow:11206,doi:22},'2/1':{dow:11371,doi:17},'2/2':{dow:11537,doi:13},'3/0':{dow:11393,doi:17},'3/1':{dow:11559,doi:13}},
+  'F-GLNF':{'2/0':{dow:11252,doi:27},'2/1':{dow:11418,doi:22},'2/2':{dow:11583,doi:18},'3/0':{dow:11440,doi:22},'3/1':{dow:11605,doi:18}},
+  'F-GLNH':{'2/0':{dow:11195,doi:27},'2/1':{dow:11360,doi:22},'2/2':{dow:11526,doi:18},'3/0':{dow:11382,doi:21},'3/1':{dow:11548,doi:18}},
+  'F-GLNK':{'2/0':{dow:11067,doi:41},'2/1':{dow:11233,doi:36},'2/2':{dow:11398,doi:32},'3/0':{dow:11255,doi:35},'3/1':{dow:11420,doi:32}},
+  'F-GOPE':{'2/0':{dow:10942,doi:38},'2/1':{dow:11107,doi:33},'2/2':{dow:11272,doi:30},'3/0':{dow:11129,doi:33},'3/1':{dow:11294,doi:29}},
+  'F-GRYL':{'2/0':{dow:11244,doi:37},'2/1':{dow:11409,doi:32},'2/2':{dow:11574,doi:28},'3/0':{dow:11431,doi:31},'3/1':{dow:11596,doi:28}},
+  'F-GTKJ':{'2/0':{dow:11385,doi:29},'2/1':{dow:11550,doi:23},'2/2':{dow:11715,doi:20},'3/0':{dow:11572,doi:23},'3/1':{dow:11737,doi:19}},
+  'F-GTVC':{'2/0':{dow:11305,doi:27},'2/1':{dow:11471,doi:21},'2/2':{dow:11636,doi:18},'3/0':{dow:11493,doi:21},'3/1':{dow:11658,doi:17}},
+  'F-GUME':{'2/0':{dow:11125,doi:41},'2/1':{dow:11290,doi:36},'2/2':{dow:11455,doi:32},'3/0':{dow:11312,doi:35},'3/1':{dow:11477,doi:31}},
+  'F-GUPE':{'2/0':{dow:10917,doi:34},'2/1':{dow:11083,doi:29},'2/2':{dow:11248,doi:26},'3/0':{dow:11105,doi:29},'3/1':{dow:11270,doi:25}},
+  'F-HAPE':{'2/0':{dow:11239,doi:26},'2/1':{dow:11405,doi:21},'2/2':{dow:11570,doi:17},'3/0':{dow:11427,doi:20},'3/1':{dow:11592,doi:16}},
+  'F-HTJT':{'2/0':{dow:11008,doi:36},'2/1':{dow:11173,doi:31},'2/2':{dow:11338,doi:27},'3/0':{dow:11195,doi:30},'3/1':{dow:11360,doi:26}}
+};
+
+const FLIGHTS=[
+  {id:'TJT51',nums:'TJT51/53/57',dep:'LFLL',arr:'LIMC',etds:'07:00 / 16:30 / 18:25',etas:'08:00 / 17:30 / 19:25',etd0:'07:00',eta0:'08:00',freq_dep:'AVIA LYS 131.590',freq_arr:'AVIA MXP 131.605',route:'RISOR T47 GEMLA DCT VANAS DCT MEDAM DCT NITAM DCT MOGBO DCT KODOK DCT TOP M135 ASTIG',fl:'F230',duration:'0H59',corr:{cd:'2.89',vw:'4.0',t:'3.7',fl_up:'18',fl_dn:'7.6',m:'3.5'},fuel:{t_climb:'00:15',f_climb:'225',t_cruise:'00:17',f_cruise:'227',t_desc:'00:59',f_desc:'260',t_trip:'00:59',f_trip:'862'},waypoints:[{n:'LFLL',alt:'13430',drm:'',dist:'',tsv:''},{n:'RISOR',alt:'15630',drm:'104',dist:'39',tsv:'13'},{n:'TOC',alt:'15630',drm:'079',dist:'6',tsv:'2'},{n:'GEMLA',alt:'17940',drm:'079',dist:'10',tsv:'2'},{n:'VANAS',alt:'17940',drm:'108',dist:'19',tsv:'4'},{n:'MEDAM',alt:'15300',drm:'141',dist:'14',tsv:'3'},{n:'NITAM',alt:'15300',drm:'132',dist:'13',tsv:'3'},{n:'MOGBO',alt:'13100',drm:'121',dist:'13',tsv:'3'},{n:'TOD',alt:'13100',drm:'098',dist:'9',tsv:'2'},{n:'KODOK',alt:'11400',drm:'098',dist:'2',tsv:'0'},{n:'TOP',alt:'7600',drm:'094',dist:'8',tsv:'2'},{n:'ASTIG',alt:'10200',drm:'083',dist:'18',tsv:'4'},{n:'LIMC',alt:'10200',drm:'020',dist:'45',tsv:'10'}],alternates:[{from_alt:'LIMC',via:'SRN DCT LIN',altn:'LIML',alt:'9400',drm:'111°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'},{from_alt:'LIMC',via:'SRN DCT CSL',altn:'LIMF',alt:'15000',drm:'237°',dist:'56',he:"12'",f:'240',fin:'150',tot:'390'}],tod_note:'TOD = 73 NM à 1500ft/min à VMO ou 248 KTS'},
+  {id:'TJT52',nums:'TJT52/54/58',dep:'LIMC',arr:'LFLL',etds:'08:40 / 13:55 / 20:05',etas:'09:40 / 15:00 / 21:05',etd0:'08:40',eta0:'09:40',freq_dep:'AVIAPARTNER 131.605',freq_arr:'AVIAPARTNER 131.590',route:'TOP DCT RONOP DCT GIGUS Z40 AMVAR',fl:'F220',duration:'0H57',corr:{cd:'2.97',vw:'4.0',t:'3.6',fl_up:'17.5',fl_dn:'7.4',m:'3.4'},fuel:{t_climb:'00:15',f_climb:'250',t_cruise:'00:16',f_cruise:'222',t_desc:'00:57',f_desc:'219',t_trip:'00:57',f_trip:'841'},waypoints:[{n:'LIMC',alt:'9100',drm:'',dist:'',tsv:''},{n:'TOC',alt:'9100',drm:'217',dist:'40',tsv:'14'},{n:'TOP',alt:'15300',drm:'217',dist:'16',tsv:'3'},{n:'RONOP',alt:'15300',drm:'294',dist:'34',tsv:'7'},{n:'TOD',alt:'15300',drm:'288',dist:'28',tsv:'6'},{n:'GIGUS',alt:'15300',drm:'288',dist:'4',tsv:'1'},{n:'AMVAR',alt:'14090',drm:'257',dist:'22',tsv:'5'},{n:'LFLL',alt:'14090',drm:'300',dist:'43',tsv:'9'}],alternates:[{from_alt:'LFLL',via:'LSE DCT',altn:'LFLY',alt:'5700',drm:'270°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'},{from_alt:'LFLL',via:'LSE PAS GVA DCT',altn:'LSGG',alt:'10900',drm:'052°',dist:'57',he:"13'",f:'260',fin:'150',tot:'410'}],tod_note:'TOD = 69 NM à 1500ft/min à VMO ou 248 KTS'},
+  {id:'TJT6615',nums:'TJT6615',dep:'LFLL',arr:'LIPE',etds:'13:45',etas:'15:15',etd0:'13:45',eta0:'15:15',freq_dep:'AVIA LYS 131.590',freq_arr:'AVIA BLQ 131.600',route:'RISOR T47 GEMLA DCT VANAS DCT MEDAM DCT NITAM DCT MOGBO DCT TOP DCT TESTO DCT ELBUK Z963 RIPDU',fl:'F230',duration:'1H18',corr:{cd:'2.89',vw:'4.0',t:'3.7',fl_up:'18',fl_dn:'7.6',m:'3.5'},fuel:{t_climb:'00:15',f_climb:'225',t_cruise:'00:36',f_cruise:'480',t_desc:'01:18',f_desc:'260',t_trip:'01:18',f_trip:'1115'},waypoints:[{n:'LFLL',alt:'13430',drm:'',dist:'',tsv:''},{n:'RISOR',alt:'15630',drm:'104',dist:'39',tsv:'13'},{n:'TOC',alt:'15630',drm:'079',dist:'6',tsv:'2'},{n:'GEMLA',alt:'17940',drm:'079',dist:'10',tsv:'2'},{n:'VANAS',alt:'17940',drm:'108',dist:'19',tsv:'4'},{n:'MEDAM',alt:'15300',drm:'141',dist:'14',tsv:'3'},{n:'NITAM',alt:'15300',drm:'132',dist:'13',tsv:'3'},{n:'MOGBO',alt:'14640',drm:'121',dist:'13',tsv:'3'},{n:'TOP',alt:'8100',drm:'096',dist:'20',tsv:'4'},{n:'TESTO',alt:'8500',drm:'116',dist:'40',tsv:'9'},{n:'TOD',alt:'8500',drm:'085',dist:'39',tsv:'8'},{n:'ELBUK',alt:'8900',drm:'085',dist:'11',tsv:'2'},{n:'RIPDU',alt:'9100',drm:'086',dist:'27',tsv:'6'},{n:'LIPE',alt:'9100',drm:'094',dist:'35',tsv:'7'}],alternates:[{from_alt:'LIPE',via:'BOA Y504 BETMU',altn:'LIMP',alt:'8900',drm:'288°',dist:'49',he:"11'",f:'223',fin:'150',tot:'373'},{from_alt:'LIPE',via:'BOA OKMAP PRT',altn:'LIRQ',alt:'9100',drm:'180°',dist:'47',he:"10'",f:'203',fin:'150',tot:'353'}],tod_note:'TOD = 73 NM à 1500ft/min à VMO ou 248 KTS'},
+  {id:'TJT6616',nums:'TJT6616',dep:'LIPE',arr:'LFLL',etds:'16:10',etas:'17:40',etd0:'16:10',eta0:'17:40',freq_dep:'AVIAPARTNER 131.600',freq_arr:'AVIAPARTNER 131.590',route:'LUPOS DCT EVKIV DCT EKPAL DCT KALIK DCT GOLAS DCT GEN DCT DEVOX DCT TOP DCT RONOP DCT GIGUS Z40 AMVAR',fl:'F240',duration:'1H20',corr:{cd:'2.81',vw:'4.0',t:'3.8',fl_up:'18.5',fl_dn:'7.8',m:'3.6'},fuel:{t_climb:'00:16',f_climb:'169',t_cruise:'00:36',f_cruise:'463',t_desc:'01:20',f_desc:'271',t_trip:'01:20',f_trip:'1113'},waypoints:[{n:'LIPE',alt:'9100',drm:'',dist:'',tsv:''},{n:'LUPOS',alt:'9100',drm:'262',dist:'30',tsv:'10'},{n:'EVKIV',alt:'9100',drm:'262',dist:'12',tsv:'4'},{n:'EKPAL',alt:'9100',drm:'262',dist:'6',tsv:'2'},{n:'TOC',alt:'8900',drm:'263',dist:'0',tsv:'0'},{n:'KALIK',alt:'8900',drm:'263',dist:'14',tsv:'3'},{n:'GOLAS',alt:'8900',drm:'262',dist:'10',tsv:'2'},{n:'GEN',alt:'8500',drm:'262',dist:'23',tsv:'5'},{n:'DEVOX',alt:'7900',drm:'315',dist:'22',tsv:'5'},{n:'TOP',alt:'7600',drm:'287',dist:'40',tsv:'9'},{n:'RONOP',alt:'15300',drm:'294',dist:'34',tsv:'7'},{n:'TOD',alt:'15300',drm:'288',dist:'23',tsv:'5'},{n:'GIGUS',alt:'15300',drm:'288',dist:'10',tsv:'2'},{n:'AMVAR',alt:'15300',drm:'257',dist:'22',tsv:'5'},{n:'LFLL',alt:'14090',drm:'300',dist:'43',tsv:'9'}],alternates:[{from_alt:'LFLL',via:'LSE DCT',altn:'LFLY',alt:'5700',drm:'270°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'},{from_alt:'LFLL',via:'LSE LTP DCT',altn:'LFLS',alt:'9100',drm:'151°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'}],tod_note:'TOD = 75 NM à 1500ft/min à VMO ou 248 KTS'},
+  {id:'TJT71',nums:'TJT71/73/77',dep:'LFLL',arr:'LFBP',etds:'06:30 / 12:00 / 16:30',etas:'07:55 / 13:25 / 17:55',etd0:'06:30',eta0:'07:55',freq_dep:'AVIAPARTNER 131.590',freq_arr:"AIR'PY 131.54",route:'REPSI DCT LERGA DCT MINSO DCT NARAK DCT AGN',fl:'F230',duration:'1H16',corr:{cd:'2.89',vw:'4.0',t:'3.7',fl_up:'18',fl_dn:'7.6',m:'3.5'},fuel:{t_climb:'00:15',f_climb:'208',t_cruise:'00:34',f_cruise:'454',t_desc:'01:16',f_desc:'260',t_trip:'01:16',f_trip:'1089'},waypoints:[{n:'LFLL',alt:'7400',drm:'',dist:'',tsv:''},{n:'REPSI',alt:'7700',drm:'248',dist:'36',tsv:'12'},{n:'TOC',alt:'7700',drm:'232',dist:'9',tsv:'3'},{n:'LERGA',alt:'8100',drm:'232',dist:'18',tsv:'4'},{n:'MINSO',alt:'8100',drm:'233',dist:'43',tsv:'9'},{n:'NARAK',alt:'2700',drm:'235',dist:'61',tsv:'13'},{n:'TOD',alt:'2700',drm:'236',dist:'36',tsv:'8'},{n:'AGN',alt:'10300',drm:'236',dist:'9',tsv:'2'},{n:'LFBP',alt:'10300',drm:'241',dist:'64',tsv:'14'}],alternates:[{from_alt:'LFBP',via:'LMB DCT TBO',altn:'LFBT',alt:'12700',drm:'121°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'},{from_alt:'LFBP',via:'LMB G17 BTZ',altn:'LFBZ',alt:'8600',drm:'275°',dist:'52',he:"11'",f:'220',fin:'150',tot:'370'}],tod_note:'TOD = 73 NM à 1500ft/min à VMO ou 248 KTS'},
+  {id:'TJT72',nums:'TJT72/74/78',dep:'LFBP',arr:'LFLL',etds:'08:10 / 14:00 / 18:20',etas:'09:35 / 15:25 / 19:45',etd0:'08:10',eta0:'09:35',freq_dep:"AIR'PY 131.54",freq_arr:'AVIA 131.590',route:'USAKU DCT TOU DCT GAI DCT MEN DCT NINUN G53 MEZIN',fl:'F240',duration:'1H19',corr:{cd:'2.81',vw:'4.0',t:'3.8',fl_up:'18.5',fl_dn:'7.8',m:'3.6'},fuel:{t_climb:'00:16',f_climb:'236',t_cruise:'00:35',f_cruise:'452',t_desc:'01:19',f_desc:'270',t_trip:'01:19',f_trip:'1101'},waypoints:[{n:'LFBP',alt:'10300',drm:'',dist:'',tsv:''},{n:'USAKU',alt:'3600',drm:'068',dist:'42',tsv:'14'},{n:'TOC',alt:'3600',drm:'083',dist:'6',tsv:'2'},{n:'TOU',alt:'4000',drm:'083',dist:'31',tsv:'7'},{n:'GAI',alt:'7600',drm:'052',dist:'28',tsv:'6'},{n:'MEN',alt:'7700',drm:'053',dist:'70',tsv:'15'},{n:'NINUN',alt:'7700',drm:'058',dist:'20',tsv:'4'},{n:'TOD',alt:'7700',drm:'059',dist:'13',tsv:'3'},{n:'MEZIN',alt:'7700',drm:'059',dist:'18',tsv:'4'},{n:'LFLL',alt:'7700',drm:'039',dist:'57',tsv:'12'}],alternates:[{from_alt:'LFLL',via:'LSE DCT',altn:'LFLY',alt:'5700',drm:'270°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'},{from_alt:'LFLL',via:'MSE DCT LTP',altn:'LFLS',alt:'9100',drm:'151°',dist:'37',he:"8'",f:'164',fin:'150',tot:'314'}],tod_note:'TOD = 75 NM à 1500ft/min à VMO ou 248 KTS'}
+];
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let currentStep=1,selectedFlight=null,selectedAvion=null,selectedVersion=null;
+let metarData={},fouille='';
+
+// ════════════════════════════════════════════════
+// INIT + BACKEND CHECK
+// ════════════════════════════════════════════════
+async function init(){
+  FLIGHTS.forEach(f=>{
+    const btn=document.createElement('div');
+    btn.className='vol-btn';btn.id='vb_'+f.id;btn.onclick=()=>selectFlight(f.id);
+    btn.innerHTML=`<div class="vol-btn-num">${f.nums}</div><div class="vol-btn-route">${f.dep} → ${f.arr}</div><div class="vol-btn-time">${f.etds}</div>`;
+    document.getElementById('volGrid').appendChild(btn);
+  });
+  const sel=document.getElementById('avionSelect');
+  Object.keys(DOW_DATA).sort().forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+  document.getElementById('date_vol').valueAsDate=new Date();
+  calcFuel();calcEZFW();
+  // Check backend
+  try{
+    const r=await fetch(BACKEND_URL+'/health',{signal:AbortSignal.timeout(5000)});
+    if(r.ok){
+      const badge=document.getElementById('backendBadge');
+      badge.textContent='⬤ backend OK';badge.className='backend-status ok';
+    }
+  }catch(e){}
+}
+
+function selectFlight(id){
+  selectedFlight=FLIGHTS.find(f=>f.id===id);
+  document.querySelectorAll('.vol-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('vb_'+id).classList.add('selected');
+  const f=selectedFlight;
+  const vi=document.getElementById('volInfo');vi.style.display='block';
+  vi.innerHTML=`✓  ${f.nums}  ·  ${f.dep} → ${f.arr}  ·  ${f.fl}  ·  ${f.duration}  ·  ETD: ${f.etds}`;
+  document.getElementById('etd').value=f.etd0;
+  document.getElementById('eta').value=f.eta0;
+  ['t_climb','f_climb','t_cruise','f_cruise','t_desc','f_desc','t_trip'].forEach(k=>document.getElementById(k).value=f.fuel[k]||'');
+  document.getElementById('route_full').value=f.route;
+  document.getElementById('wx_dep').value=f.dep;
+  document.getElementById('wx_arr').value=f.arr;
+  if(f.alternates[0])document.getElementById('wx_altn1').value=f.alternates[0].altn;
+  if(f.alternates[1])document.getElementById('wx_altn2').value=f.alternates[1].altn;
+  buildCorrTable(f.corr);calcFuel();
+}
+
+function onAvionChange(){
+  selectedAvion=document.getElementById('avionSelect').value;
+  if(!selectedAvion){document.getElementById('dowDisplay').classList.remove('visible');return;}
+  selectedVersion='2/0';buildVersionBtns();updateDOW();
+  document.getElementById('dowDisplay').classList.add('visible');
+}
+function buildVersionBtns(){
+  const c=document.getElementById('versionBtns');c.innerHTML='';
+  Object.keys(DOW_DATA[selectedAvion]).forEach(v=>{
+    const b=document.createElement('button');b.className='ver-btn'+(v===selectedVersion?' active':'');
+    b.textContent=v;b.onclick=()=>{selectedVersion=v;buildVersionBtns();updateDOW();};c.appendChild(b);
+  });
+}
+function updateDOW(){
+  const d=DOW_DATA[selectedAvion][selectedVersion];
+  document.getElementById('dowGrid').innerHTML=`
+    <div style="text-align:center"><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim)">DOW</div><div class="dow-val">${d.dow.toLocaleString()}</div><div class="dow-unit">lbs</div></div>
+    <div style="text-align:center"><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim)">DOI</div><div class="dow-val">${d.doi}</div><div class="dow-unit">index</div></div>
+    <div style="text-align:center"><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim)">VERSION</div><div class="dow-val">${selectedVersion}</div></div>
+    <div style="text-align:center"><div style="font-family:var(--mono);font-size:9px;color:var(--text-dim)">AVION</div><div class="dow-val" style="font-size:12px">${selectedAvion}</div></div>`;
+  document.getElementById('bow').value=d.dow;
+  document.getElementById('doi_display').value=d.doi;
+  calcEZFW();
+}
+
+function calcFuel(){
+  const cl=parseFloat(document.getElementById('f_climb').value)||0;
+  const cr=parseFloat(document.getElementById('f_cruise').value)||0;
+  const de=parseFloat(document.getElementById('f_desc').value)||0;
+  const co=parseFloat(document.getElementById('f_corr').value)||0;
+  const al=parseFloat(document.getElementById('f_altn').value)||0;
+  const ta=parseFloat(document.getElementById('f_taxi').value)||110;
+  const ex=parseFloat(document.getElementById('f_extra').value)||0;
+  const cb=parseFloat(document.getElementById('f_cdb').value)||0;
+  const ph=cl+cr+de+150;const trip=ph+co;const rr=Math.max(60,trip*.05);const req=trip+rr+al+380+ta+ex+cb;
+  document.getElementById('f_total_phases').value=Math.round(ph);
+  document.getElementById('f_trip').value=Math.round(trip);
+  document.getElementById('f_rr').value=Math.round(rr);
+  document.getElementById('f_required').value=Math.round(req);
+  document.getElementById('f_block').value=Math.round(req);
+}
+
+function calcEZFW(){
+  const h=parseInt(document.getElementById('pax_h').value)||0;
+  const f=parseInt(document.getElementById('pax_f').value)||0;
+  const e=parseInt(document.getElementById('pax_e').value)||0;
+  const mh=h*203,mf=f*160,me=e*77,tp=h+f+e,mb=tp*10,payload=mh+mf+me+mb;
+  document.getElementById('mass_h').value=mh;document.getElementById('mass_f').value=mf;
+  document.getElementById('mass_e').value=me;document.getElementById('mass_bag').value=mb;
+  const bow=parseFloat(document.getElementById('bow').value)||0;
+  const ez=bow+payload;
+  document.getElementById('res_payload').textContent=payload.toLocaleString()+' lbs';
+  document.getElementById('res_dow').textContent=(bow||'—')+' lbs';
+  document.getElementById('res_ezfw').textContent=bow>0?ez.toLocaleString()+' lbs':'—';
+  if(bow>0){
+    const margin=17120-ez;const el=document.getElementById('res_margin');
+    el.textContent=`Marge MTOW : ${margin.toLocaleString()} lbs`;
+    el.style.color=margin<0?'var(--danger)':margin<500?'var(--warn)':'var(--accent3)';
+  }
+}
+
+function buildCorrTable(c){
+  document.getElementById('corrTable').innerHTML=`<table style="width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px">${[['C/D de réf',c.cd],['Vw: ± 10 KTS',`± ${c.vw} %`],['T: -10°C',`+ ${c.t} %`],['FL: -1000 ft',`+ ${c.fl_up} %`],['FL: +1000 ft',`- ${c.fl_dn} %`],['M: -1000 LBS',`- ${c.m} %`]].map(([k,v])=>`<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 0;color:var(--text-dim)">${k}</td><td style="text-align:right;color:var(--warn);font-weight:bold">${v}</td></tr>`).join('')}</table>`;
+}
+
+function buildWaypoints(){
+  if(!selectedFlight)return;
+  const f=selectedFlight,tb=document.getElementById('wpBody');tb.innerHTML='';
+  f.waypoints.forEach((wp,i)=>{
+    const isO=i===0,isD=i===f.waypoints.length-1,tc=wp.n==='TOC'||wp.n==='TOD';
+    const cls=isO?'wp-origin':isD?'wp-dest':tc?'wp-toc':'';
+    tb.innerHTML+=`<tr><td class="${cls}">${wp.n}</td><td><input type="text" value="${wp.alt}" style="text-align:center;padding:4px 3px;font-size:11px;width:50px"></td><td><input type="text" value="${wp.drm}" style="text-align:center;padding:4px 3px;font-size:11px;width:38px"></td><td><input type="text" value="${wp.dist}" style="text-align:center;padding:4px 3px;font-size:11px;width:36px"></td><td><input type="text" value="${wp.tsv}" style="text-align:center;padding:4px 3px;font-size:11px;width:34px"></td><td><input type="text" style="text-align:center;padding:4px 3px;font-size:11px;width:40px"></td><td><input type="text" style="text-align:center;padding:4px 3px;font-size:11px;width:40px"></td><td><input type="text" style="text-align:center;padding:4px 3px;font-size:11px;width:40px"></td></tr>`;
+  });
+  const ar=document.getElementById('altnRows');ar.innerHTML='';
+  f.alternates.forEach(a=>{
+    ar.innerHTML+=`<div style="margin-bottom:10px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px"><div style="font-family:var(--cond);font-weight:700;font-size:15px;color:var(--accent3);margin-bottom:8px">${a.altn} <span style="font-size:11px;color:var(--text-dim);font-weight:400">via ${a.via}</span></div><div class="grid-4"><div class="field"><label>FL</label><input type="text" value="${a.alt}"></div><div class="field"><label>DRM°</label><input type="text" value="${a.drm}"></div><div class="field"><label>Dist</label><input type="text" value="${a.dist}"></div><div class="field"><label>HE</label><input type="text" value="${a.he}"></div><div class="field"><label>F.Est (lbs)</label><input type="number" value="${a.f}"></div><div class="field"><label>Fin. Res.</label><span class="fixed-val" style="font-size:12px;padding:6px 8px">${a.fin}</span></div><div class="field"><label>Total (lbs)</label><input type="number" value="${a.tot}"></div><div class="field"><label>Réel</label><input type="number"></div></div></div>`;
+  });
+}
+
+// ════════════════════════════════════════════════
+// METAR — via backend proxy (contourne CORS Safari)
+// ════════════════════════════════════════════════
+async function fetchAllMetar(){
+  const stations=['wx_dep','wx_arr','wx_altn1','wx_altn2']
+    .map(id=>document.getElementById(id).value.trim().toUpperCase()).filter(v=>v.length===4);
+  if(!stations.length)return;
+  const btn=document.getElementById('metarBtn');btn.disabled=true;
+  document.getElementById('fetchIcon').innerHTML='<span class="spinner"></span>';
+  document.getElementById('fetchLabel').textContent='Chargement...';
+  const container=document.getElementById('metar-results');container.innerHTML='';
+  metarData={};
+  for(const icao of stations){
+    const card=document.createElement('div');card.className='metar-card';
+    card.innerHTML=`<div class="metar-icao">${icao} <span class="spinner"></span></div>`;
+    container.appendChild(card);
+    try{
+      // Appel au backend proxy → contourne le CORS de Safari
+      const r=await fetch(`${BACKEND_URL}/api/metar?icao=${icao}`);
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d=await r.json();
+      metarData[icao]={metar:d.metar,taf:d.taf};
+      card.innerHTML=`<div class="metar-icao">${icao}</div>
+        <span class="metar-lbl">METAR</span><div class="metar-raw">${d.metar}</div>
+        ${d.taf?`<span class="metar-lbl" style="margin-top:8px">TAF</span><div class="taf-raw">${d.taf}</div>`:''}`;
+    }catch(e){
+      metarData[icao]={metar:'',taf:''};
+      card.innerHTML=`<div class="metar-icao" style="color:var(--warn)">${icao} — ${e.message}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">Saisie manuelle :</div>
+        <textarea rows="2" style="font-size:11px;color:var(--warn);margin-bottom:4px" placeholder="METAR ${icao}..." oninput="metarData['${icao}'].metar=this.value"></textarea>
+        <textarea rows="2" style="font-size:11px;color:var(--accent3)" placeholder="TAF ${icao}..." oninput="metarData['${icao}'].taf=this.value"></textarea>`;
+    }
+  }
+  btn.disabled=false;
+  document.getElementById('fetchIcon').textContent='✓';
+  document.getElementById('fetchLabel').textContent='ACTUALISER';
+}
+
+function toggleFouille(v){
+  fouille=v;
+  document.getElementById('fouille_oui').classList.toggle('active',v==='OUI');
+  document.getElementById('fouille_non').classList.toggle('active',v==='NON');
+}
+
+function changeStep(dir){
+  const prev=currentStep;currentStep=Math.max(1,Math.min(5,currentStep+dir));
+  document.getElementById('step'+prev).classList.remove('active');
+  document.getElementById('step'+currentStep).classList.add('active');
+  document.getElementById('stepNum').textContent=currentStep;
+  document.getElementById('progressFill').style.width=(currentStep/5*100)+'%';
+  document.getElementById('btnPrev').style.display=currentStep>1?'':'none';
+  const btn=document.getElementById('btnNext');
+  if(currentStep===5){
+    btn.className='btn btn-success';btn.innerHTML='⬇ GÉNÉRER PDF';btn.onclick=generatePDF;buildRecap();
+  }else{
+    btn.className='btn btn-primary';btn.innerHTML='SUIVANT →';btn.onclick=()=>changeStep(1);
+  }
+  if(currentStep===4)buildWaypoints();
+  window.scrollTo(0,0);
+}
+
+function buildRecap(){
+  const f=selectedFlight,block=document.getElementById('f_block').value||'--';
+  document.getElementById('recap-content').innerHTML=`
+    <div class="block-fuel-display">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:4px">Block Fuel</div>
+      <div class="block-fuel-val">${block} <span style="font-family:var(--mono);font-size:16px;color:var(--text-dim)">lbs</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Vol</div>
+      ${[['N° VOL',f?f.nums:'--'],['DATE',document.getElementById('date_vol').value],['ROUTE',f?`${f.dep} → ${f.arr}`:'--'],['ETD / ETA',`${document.getElementById('etd').value} / ${document.getElementById('eta').value} LT`],['ÉQUIPAGE',`${document.getElementById('cdb_tri').value||'--'} (CDB) · ${document.getElementById('opl_tri').value||'--'} (OPL) · ${document.getElementById('pcb_quad').value||'--'} (PCB)`]].map(([k,v])=>`<div class="recap-row"><span class="recap-key">${k}</span><span class="recap-val">${v}</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title">Avion & Masse</div>
+      ${[['IMMATRICULATION',document.getElementById('avionSelect').value||'--'],['VERSION',selectedVersion||'--'],['DOW',document.getElementById('bow').value+' lbs'],['EZFW',document.getElementById('res_ezfw').textContent||'--']].map(([k,v])=>`<div class="recap-row"><span class="recap-key">${k}</span><span class="recap-val" style="${k==='DOW'||k==='EZFW'?'color:var(--accent3)':''}">${v}</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title">Carburant</div>
+      ${[['TRIP FUEL',document.getElementById('f_trip').value+' lbs'],['ALTN',(document.getElementById('f_altn').value||'0')+' lbs'],['EXTRA',(document.getElementById('f_extra').value||'0')+' lbs'],['BLOCK FUEL',block+' lbs']].map(([k,v])=>`<div class="recap-row"><span class="recap-key">${k}</span><span class="recap-val" style="color:var(--warn)">${v}</span></div>`).join('')}
+    </div>`;
+}
+
+// ════════════════════════════════════════════════
+// PDF — POST vers backend
+// ════════════════════════════════════════════════
+async function generatePDF(){
+  const f=selectedFlight;
+  const statusEl=document.getElementById('pdfStatus');
+  const btn=document.getElementById('btnNext');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Génération...';
+  statusEl.className='status-box loading';
+  statusEl.innerHTML='<span class="spinner"></span> Génération du PDF en cours...';
+
+  const h=parseInt(document.getElementById('pax_h').value)||0;
+  const fm=parseInt(document.getElementById('pax_f').value)||0;
+  const e=parseInt(document.getElementById('pax_e').value)||0;
+  const tp=h+fm+e,bow=parseFloat(document.getElementById('bow').value)||0;
+  const payload=h*203+fm*160+e*77+tp*10;
+
+  const payload_data={
+    vol_nums:f?f.nums:'',dep:f?f.dep:'',arr:f?f.arr:'',
+    duration:f?f.duration:'',fl:f?f.fl:'',route:f?f.route:'',
+    etds:f?f.etds:'',etas:f?f.etas:'',
+    etd:document.getElementById('etd').value,eta:document.getElementById('eta').value,
+    freq_dep:f?f.freq_dep:'',freq_arr:f?f.freq_arr:'',
+    avion:document.getElementById('avionSelect').value,
+    version:selectedVersion||'',dow:document.getElementById('bow').value,
+    doi:document.getElementById('doi_display').value,
+    date:document.getElementById('date_vol').value,
+    num_etape:'',
+    crew:{cdb_tri:document.getElementById('cdb_tri').value,cdb_pf:document.getElementById('cdb_pf').value,
+          opl_tri:document.getElementById('opl_tri').value,opl_pf:document.getElementById('opl_pf').value,
+          pcb_quad:document.getElementById('pcb_quad').value},
+    fuel:{t_climb:document.getElementById('t_climb').value,f_climb:document.getElementById('f_climb').value,
+          t_cruise:document.getElementById('t_cruise').value,f_cruise:document.getElementById('f_cruise').value,
+          t_desc:document.getElementById('t_desc').value,f_desc:document.getElementById('f_desc').value,
+          f_total:document.getElementById('f_total_phases').value,f_corr:document.getElementById('f_corr').value||'0',
+          t_trip:document.getElementById('t_trip').value,f_trip:document.getElementById('f_trip').value,
+          f_rr:document.getElementById('f_rr').value,t_altn:document.getElementById('t_altn').value,
+          f_altn:document.getElementById('f_altn').value||'0',f_taxi:document.getElementById('f_taxi').value||'110',
+          f_extra:document.getElementById('f_extra').value||'0',f_cdb:document.getElementById('f_cdb').value||'0',
+          f_required:document.getElementById('f_required').value,f_block:document.getElementById('f_block').value},
+    corr:f?f.corr:{cd:'2.89',vw:'4.0',t:'3.7',fl_up:'18',fl_dn:'7.6',m:'3.5'},
+    ezfw:{h,f:fm,e,total_pax:tp,h_mass:h*203,f_mass:fm*160,e_mass:e*77,bag_mass:tp*10,payload,ezfw:bow+payload},
+    waypoints:f?f.waypoints:[],alternates:f?f.alternates:[],
+    fouille,heure_fouille:document.getElementById('heure_fouille').value,
+    tod_note:f?f.tod_note:'',metars:metarData,
+    generated:new Date().toLocaleString('fr-FR')
+  };
+
+  try{
+    const resp=await fetch(`${BACKEND_URL}/api/pdf`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload_data)
+    });
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data=await resp.json();
+    if(data.error) throw new Error(data.error);
+
+    // Téléchargement
+    const binary=atob(data.pdf);
+    const bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+    const blob=new Blob([bytes],{type:'application/pdf'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`PVE_${f?f.id:'VOL'}_${(document.getElementById('date_vol').value||'').replace(/-/g,'')}.pdf`;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    statusEl.className='status-box success';
+    statusEl.innerHTML=`✓ PDF généré — A4 paysage · Champs en bleu`;
+  }catch(err){
+    statusEl.className='status-box error';
+    statusEl.innerHTML=`⚠ Erreur : ${err.message}<br><small>Vérifier que le backend est démarré (badge en haut)</small>`;
+  }
+  btn.disabled=false;btn.innerHTML='⬇ GÉNÉRER PDF';
+}
+
+init();
+</script>
+</body>
+</html>
